@@ -12,8 +12,10 @@ public:
 	: GraphObject(imageID, x, y, dir)
 	{
 		m_world = sw;
+		setVisible(true);
 	}
 
+	bool isAt(int x, int y) const;
 	virtual void move() = 0;
 
 protected:
@@ -32,6 +34,21 @@ public:
 	}
 
 	virtual void move();
+private:
+};
+
+class Wall : public Actor
+{
+public:
+	Wall(StudentWorld* sw, int x, int y)
+	: Actor(sw, IID_WALL, x, y, 0)
+	{
+	}
+
+	// walls don't do anything
+	virtual void move()
+	{
+	}
 private:
 };
 

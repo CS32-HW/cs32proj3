@@ -7,7 +7,7 @@ G32 = /usr/local/cs/bin/g32
 OBJECTS = $(patsubst %.cpp, %.o, $(wildcard *.cpp))
 HEADERS = $(wildcard *.h)
 
-.PHONY: default all clean
+.PHONY: default all clean run
 
 PRODUCT = MarbleMadness
 
@@ -22,3 +22,6 @@ $(PRODUCT): $(OBJECTS)
 clean:
 	rm -f *.o
 	rm -f $(PRODUCT)
+
+run: all
+	./$(PRODUCT)
