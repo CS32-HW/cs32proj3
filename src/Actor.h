@@ -11,26 +11,33 @@ public:
 	Actor(StudentWorld* sw, int imageID, int x, int y, int dir = 0)
 	: GraphObject(imageID, x, y, dir)
 	{
-		m_world = sw;
 		setVisible(true);
+		m_world = sw;
+		m_hp = 0;
 	}
 
 	bool isAt(int x, int y) const;
 	virtual void doSomething() = 0;
+
+	virtual bool isAlive() const { return m_hp > 0; }
+	int getHP() const { return m_hp; }
+	void setHP(int hp) { m_hp = hp; }
 
 protected:
 	StudentWorld* getWorld() const { return m_world; }
 
 private:
 	StudentWorld* m_world;
+	int m_hp;
 };
 
 class Avatar : public Actor
 {
 public:
-	Avatar(StudentWorld* sw, int x, int y, int dir = 0)
-	: Actor(sw, IID_PLAYER, x, y, dir)
+	Avatar(StudentWorld* sw, int x, int y)
+	: Actor(sw, IID_PLAYER, x, y, 0)
 	{
+		setHP(20);
 	}
 
 	virtual void doSomething();
@@ -46,9 +53,10 @@ public:
 	}
 
 	// walls don't do anything
-	virtual void doSomething()
-	{
-	}
+	virtual void doSomething() {}
+
+	// walls can't die
+	virtual bool isAlive() const { return true; }
 private:
 };
 

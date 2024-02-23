@@ -1,5 +1,6 @@
 #include "Actor.h"
 #include "StudentWorld.h"
+#include <math.h>
 
 bool Actor::isAt(int x, int y) const
 {
