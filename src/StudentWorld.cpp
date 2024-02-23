@@ -56,12 +56,14 @@ int StudentWorld::init()
 
 int StudentWorld::move()
 {
-	// This code is here merely to allow the game to build, run, and terminate after you type q
-	setGameStatText("Game will end when you type q");
-
 	list<Actor*>::iterator it = m_actors.begin();
 	for (; it != m_actors.end(); it++)
 		(**it).doSomething();
+
+	char status[100];
+	snprintf(status, 100, "Score: %07d  Level: %02d  Lives: %2d  Health: %3d%%  Ammo: %3d  Bonus: %4d",
+			getScore(), getLevel(), getLives(), 100, 20, 100);
+	setGameStatText((string)status);
 
 	return GWSTATUS_CONTINUE_GAME;
 }
