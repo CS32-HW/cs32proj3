@@ -22,6 +22,7 @@ public:
 private:
 	std::list<Actor*> m_actors;
 	Level m_level;
+	int m_bonus;
 };
 
 #endif // STUDENTWORLD_H_

@@ -15,6 +15,7 @@ GameWorld* createStudentWorld(string assetPath)
 StudentWorld::StudentWorld(string assetPath)
 : m_level(assetPath), GameWorld(assetPath)
 {
+	m_bonus = 0;
 }
 
 int StudentWorld::init()
@@ -22,6 +23,8 @@ int StudentWorld::init()
 	int lvl = getLevel();
 	if (lvl > 99)
 		return GWSTATUS_PLAYER_WON;
+
+	m_bonus = 1000; // each level starts off with bonus of 1000
 
 	char lvlStr[3];
 	snprintf(lvlStr, 3, "%02d", lvl);
@@ -57,13 +60,35 @@ int StudentWorld::init()
 
 int StudentWorld::move()
 {
-	list<Actor*>::iterator it = m_actors.begin();
-	for (; it != m_actors.end(); it++)
-		(**it).doSomething();
+	list<Actor*>::iterator it;
+	for (it = m_actors.begin(); it != m_actors.end(); it++) {
+		if ((**it).isAlive())
+			(**it).doSomething();
+	}
+
+	// delete dead actors
+	for (it = m_actors.begin(); it != m_actors.end(); ) {
+		if (!(**it).isAlive()) {
+			// if player died
+			if (it == m_actors.begin()) {
+				decLives();
+				return GWSTATUS_PLAYER_DIED;
+			}
+
+			delete *it;
+			it = m_actors.erase(it);
+		} else {
+			it++;
+		}
+	}
+
+	// reduce bonus score by 1
+	if (m_bonus > 0)
+		m_bonus -= 1;
 
 	char status[100];
 	snprintf(status, 100, "Score: %07d  Level: %02d  Lives: %2d  Health: %3d%%  Ammo: %3d  Bonus: %4d",
-			getScore(), getLevel(), getLives(), m_actors.front()->getHP()*5, 20, 100);
+			getScore(), getLevel(), getLives(), m_actors.front()->getHP()*5, 20, m_bonus);
 	setGameStatText((string)status);
 
 	return GWSTATUS_CONTINUE_GAME;

@@ -12,9 +12,15 @@ bool Actor::isAt(int x, int y) const
 
 void Avatar::doSomething()
 {
+	if (!isAlive())
+		return;
+
 	int key;
 	if (getWorld()->getKey(key)) {
 		switch (key) {
+		case KEY_PRESS_ESCAPE:
+			setHP(0);
+			break;
 		case KEY_PRESS_LEFT:
 			if (!getWorld()->containsActor(getX()-1, getY()))
 				moveTo(getX()-1, getY());
