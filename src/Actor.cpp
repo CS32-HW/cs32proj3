@@ -3,13 +3,13 @@
 
 bool Actor::isAt(int x, int y) const
 {
-	if (getX() == x && getY() == y)
+	if (fabs(getX()-x) < 0.5 && fabs(getY()-y) < 0.5)
 		return true;
 	else
 		return false;
 }
 
-void Avatar::move()
+void Avatar::doSomething()
 {
 	int key;
 	if (getWorld()->getKey(key)) {

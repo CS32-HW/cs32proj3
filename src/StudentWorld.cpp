@@ -61,7 +61,7 @@ int StudentWorld::move()
 
 	list<Actor*>::iterator it = m_actors.begin();
 	for (; it != m_actors.end(); it++)
-		(**it).move();
+		(**it).doSomething();
 
 	return GWSTATUS_CONTINUE_GAME;
 }

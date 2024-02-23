@@ -16,7 +16,7 @@ public:
 	}
 
 	bool isAt(int x, int y) const;
-	virtual void move() = 0;
+	virtual void doSomething() = 0;
 
 protected:
 	StudentWorld* getWorld() const { return m_world; }
@@ -33,7 +33,7 @@ public:
 	{
 	}
 
-	virtual void move();
+	virtual void doSomething();
 private:
 };
 
@@ -41,12 +41,12 @@ class Wall : public Actor
 {
 public:
 	Wall(StudentWorld* sw, int x, int y)
-	: Actor(sw, IID_WALL, x, y, 0)
+	: Actor(sw, IID_WALL, x, y)
 	{
 	}
 
 	// walls don't do anything
-	virtual void move()
+	virtual void doSomething()
 	{
 	}
 private:
