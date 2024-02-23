@@ -23,8 +23,14 @@ public:
 	int getHP() const { return m_hp; }
 	void setHP(int hp) { m_hp = hp; }
 
+	virtual bool isPlayer() const = 0;
+	virtual bool isMovable() const = 0;
+
+	virtual bool move(int dir);
+
 protected:
 	StudentWorld* getWorld() const { return m_world; }
+	Actor* getActorInDirection(int dir) const;
 
 private:
 	StudentWorld* m_world;
@@ -41,7 +47,12 @@ public:
 	}
 
 	virtual void doSomething();
+
+	virtual bool isPlayer() const { return true; }
+	virtual bool isMovable() const { return false; }
+
 private:
+	void pushForward();
 };
 
 class Wall : public Actor
@@ -57,6 +68,28 @@ public:
 
 	// walls can't die
 	virtual bool isAlive() const { return true; }
+
+	virtual bool isPlayer() const { return false; }
+	virtual bool isMovable() const { return false; }
+private:
+};
+
+class Marble : public Actor
+{
+public:
+	Marble(StudentWorld* sw, int x, int y)
+	: Actor(sw, IID_MARBLE, x, y)
+	{
+		setHP(10);
+	}
+
+	// marbles don't do anything
+	virtual void doSomething() {}
+
+	virtual bool isPlayer() const { return false; }
+	virtual bool isMovable() const { return true; }
+
+
 private:
 };
 

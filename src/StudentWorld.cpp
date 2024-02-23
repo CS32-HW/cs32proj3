@@ -52,6 +52,9 @@ int StudentWorld::init()
 			case Level::wall:
 				m_actors.push_back(new Wall(this, x, y));
 				break;
+			case Level::marble:
+				m_actors.push_back(new Marble(this, x, y));
+				break;
 			}
 		}
 	}
@@ -112,4 +115,15 @@ bool StudentWorld::containsActor(int x, int y) const
 	}
 
 	return false;
+}
+
+Actor* StudentWorld::getActor(int x, int y) const
+{
+	list<Actor*>::const_iterator it;
+	for (it = m_actors.begin(); it != m_actors.end(); it++) {
+		if ((**it).isAt(x, y))
+			return *it;
+	}
+
+	return nullptr;
 }

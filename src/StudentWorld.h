@@ -18,6 +18,7 @@ public:
 	virtual void cleanUp();
 
 	bool containsActor(int x, int y) const;
+	Actor* getActor(int x, int y) const;
 
 private:
 	std::list<Actor*> m_actors;
