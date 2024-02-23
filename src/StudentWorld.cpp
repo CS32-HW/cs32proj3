@@ -43,7 +43,8 @@ int StudentWorld::init()
 			case Level::empty:
 				break;
 			case Level::player:
-				m_actors.push_back(new Avatar(this, x, y));
+				// player at front for easy access
+				m_actors.push_front(new Avatar(this, x, y));
 				break;
 			case Level::wall:
 				m_actors.push_back(new Wall(this, x, y));
@@ -62,7 +63,7 @@ int StudentWorld::move()
 
 	char status[100];
 	snprintf(status, 100, "Score: %07d  Level: %02d  Lives: %2d  Health: %3d%%  Ammo: %3d  Bonus: %4d",
-			getScore(), getLevel(), getLives(), 100, 20, 100);
+			getScore(), getLevel(), getLives(), m_actors.front()->getHP()*5, 20, 100);
 	setGameStatText((string)status);
 
 	return GWSTATUS_CONTINUE_GAME;
