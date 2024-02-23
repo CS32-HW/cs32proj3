@@ -50,10 +50,10 @@ int StudentWorld::init()
 				m_actors.push_front(new Avatar(this, x, y));
 				break;
 			case Level::wall:
-				m_actors.push_back(new Wall(this, x, y));
+				addActor(new Wall(this, x, y));
 				break;
 			case Level::marble:
-				m_actors.push_back(new Marble(this, x, y));
+				addActor(new Marble(this, x, y));
 				break;
 			}
 		}
@@ -91,7 +91,7 @@ int StudentWorld::move()
 
 	char status[100];
 	snprintf(status, 100, "Score: %07d  Level: %02d  Lives: %2d  Health: %3d%%  Ammo: %3d  Bonus: %4d",
-			getScore(), getLevel(), getLives(), m_actors.front()->getHP()*5, 20, m_bonus);
+			getScore(), getLevel(), getLives(), m_actors.front()->getHP()*5, m_actors.front()->getPeaCount(), m_bonus);
 	setGameStatText((string)status);
 
 	return GWSTATUS_CONTINUE_GAME;
@@ -126,4 +126,25 @@ Actor* StudentWorld::getActor(int x, int y) const
 	}
 
 	return nullptr;
+}
+
+void StudentWorld::addActor(Actor* actor)
+{
+	m_actors.push_back(actor);
+	return;
+}
+
+bool StudentWorld::attackActor(int x, int y, int damage)
+{
+	bool retval = false;
+
+	list<Actor*>::iterator it;
+	for (it = m_actors.begin(); it != m_actors.end(); it++) {
+		if ((**it).isAt(x, y)) {
+			if ((**it).attack(damage))
+				retval = true;
+		}
+	}
+
+	return retval;
 }

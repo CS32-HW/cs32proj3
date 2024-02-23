@@ -58,6 +58,9 @@ void Avatar::doSomething()
 		case KEY_PRESS_ESCAPE:
 			setHP(0);
 			break;
+		case KEY_PRESS_SPACE:
+			firePea();
+			break;
 		case KEY_PRESS_LEFT:
 			setDirection(left);
 			pushForward();
@@ -88,6 +91,49 @@ void Avatar::pushForward()
 		if (actor->move(getDirection()))
 			moveForward();
 	}
+
+	return;
+}
+
+void Avatar::firePea()
+{
+	if (getPeaCount() <= 0)
+		return;
+
+	int dir = getDirection();
+
+	Actor* pea;
+	if (dir == left)
+		pea = new Pea(getWorld(), getX()-1, getY(), dir);
+	else if (dir == right)
+		pea = new Pea(getWorld(), getX()+1, getY(), dir);
+	else if (dir == up)
+		pea = new Pea(getWorld(), getX(), getY()+1, dir);
+	else if (dir == down)
+		pea = new Pea(getWorld(), getX(), getY()-1, dir);
+	else
+		return;
+
+	getWorld()->addActor(pea);
+
+	setPeaCount(getPeaCount()-1);
+	return;
+}
+
+void Pea::doSomething()
+{
+	if (!isAlive())
+		return;
+
+	if (getWorld()->attackActor(getX(), getY(), 2)) {
+		setHP(0);
+		return;
+	}
+
+	moveForward();
+
+	if (getWorld()->attackActor(getX(), getY(), 2))
+		setHP(0);
 
 	return;
 }

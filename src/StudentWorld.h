@@ -19,6 +19,8 @@ public:
 
 	bool containsActor(int x, int y) const;
 	Actor* getActor(int x, int y) const;
+	void addActor(Actor* actor);
+	bool attackActor(int x, int y, int damage);
 
 private:
 	std::list<Actor*> m_actors;

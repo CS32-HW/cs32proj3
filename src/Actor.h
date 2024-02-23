@@ -19,13 +19,19 @@ public:
 	bool isAt(int x, int y) const;
 	virtual void doSomething() = 0;
 
-	virtual bool isAlive() const { return m_hp > 0; }
 	int getHP() const { return m_hp; }
 	void setHP(int hp) { m_hp = hp; }
+	virtual bool isAlive() const { return m_hp > 0; }
+	virtual bool attack(int damage) { m_hp -= damage; return true; }
 
-	virtual bool isPlayer() const = 0;
-	virtual bool isMovable() const = 0;
+	virtual bool isPlayer() const { return false; }
+	virtual bool isMovable() const { return false; }
+	virtual bool isPea() const { return false; }
 
+	virtual int getPeaCount() const { return m_peaCount; }
+	virtual void setPeaCount(int peaCount) { m_peaCount = peaCount; }
+
+	// move actor in direction, returns false if failed
 	virtual bool move(int dir);
 
 protected:
@@ -35,6 +41,7 @@ protected:
 private:
 	StudentWorld* m_world;
 	int m_hp;
+	int m_peaCount;
 };
 
 class Avatar : public Actor
@@ -44,15 +51,16 @@ public:
 	: Actor(sw, IID_PLAYER, x, y, 0)
 	{
 		setHP(20);
+		setPeaCount(20);
 	}
 
 	virtual void doSomething();
 
 	virtual bool isPlayer() const { return true; }
-	virtual bool isMovable() const { return false; }
 
 private:
 	void pushForward();
+	void firePea();
 };
 
 class Wall : public Actor
@@ -66,11 +74,10 @@ public:
 	// walls don't do anything
 	virtual void doSomething() {}
 
-	// walls can't die
+	// walls can't die or take damage
 	virtual bool isAlive() const { return true; }
+	virtual bool attack(int damage) { return true; }
 
-	virtual bool isPlayer() const { return false; }
-	virtual bool isMovable() const { return false; }
 private:
 };
 
@@ -86,9 +93,23 @@ public:
 	// marbles don't do anything
 	virtual void doSomething() {}
 
-	virtual bool isPlayer() const { return false; }
 	virtual bool isMovable() const { return true; }
 
+private:
+};
+
+class Pea : public Actor
+{
+public:
+	Pea(StudentWorld* sw, int x, int y, int dir)
+	: Actor(sw, IID_PEA, x, y, dir)
+	{
+		setHP(2);
+	}
+
+	virtual void doSomething();
+	virtual bool isPea() const { return true; }
+	virtual bool attack(int damage) { return false; }
 
 private:
 };
