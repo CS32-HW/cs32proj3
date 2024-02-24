@@ -55,6 +55,9 @@ int StudentWorld::init()
 			case Level::marble:
 				addActor(new Marble(this, x, y));
 				break;
+			case Level::pit:
+				addActor(new Pit(this, x, y));
+				break;
 			}
 		}
 	}

@@ -14,6 +14,7 @@ public:
 		setVisible(true);
 		m_world = sw;
 		m_hp = 0;
+		m_peaCount = 0;
 	}
 
 	bool isAt(int x, int y) const;
@@ -104,11 +105,26 @@ public:
 	Pea(StudentWorld* sw, int x, int y, int dir)
 	: Actor(sw, IID_PEA, x, y, dir)
 	{
-		setHP(2);
+		setHP(1);
 	}
 
 	virtual void doSomething();
 	virtual bool isPea() const { return true; }
+	virtual bool attack(int damage) { return false; }
+
+private:
+};
+
+class Pit : public Actor
+{
+public:
+	Pit(StudentWorld* sw, int x, int y)
+	: Actor(sw, IID_PIT, x, y)
+	{
+	}
+
+	virtual void doSomething() {}
+	virtual bool isAlive() const { return true; }
 	virtual bool attack(int damage) { return false; }
 
 private:
