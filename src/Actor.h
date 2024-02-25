@@ -28,6 +28,7 @@ public:
 	virtual bool isPlayer() const { return false; }
 	virtual bool isMovable() const { return false; }
 	virtual bool isPea() const { return false; }
+	virtual bool isFillable() const { return false; }
 
 	virtual int getPeaCount() const { return m_peaCount; }
 	virtual void setPeaCount(int peaCount) { m_peaCount = peaCount; }
@@ -37,7 +38,8 @@ public:
 
 protected:
 	StudentWorld* getWorld() const { return m_world; }
-	Actor* getActorInDirection(int dir) const;
+	int getXInDir(int dir) const;
+	int getYInDir(int dir) const;
 
 private:
 	StudentWorld* m_world;
@@ -121,11 +123,12 @@ public:
 	Pit(StudentWorld* sw, int x, int y)
 	: Actor(sw, IID_PIT, x, y)
 	{
+		setHP(1);
 	}
 
-	virtual void doSomething() {}
-	virtual bool isAlive() const { return true; }
+	virtual void doSomething();
 	virtual bool attack(int damage) { return false; }
+	virtual bool isFillable() { return true; }
 
 private:
 };

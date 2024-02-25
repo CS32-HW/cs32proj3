@@ -120,6 +120,28 @@ bool StudentWorld::containsActor(int x, int y) const
 	return false;
 }
 
+bool StudentWorld::containsMovableActor(int x, int y) const
+{
+	list<Actor*>::const_iterator it;
+	for (it = m_actors.begin(); it != m_actors.end(); it++) {
+		if ((**it).isAt(x, y) && (**it).isMovable())
+			return true;
+	}
+
+	return false;
+}
+
+bool StudentWorld::containsFillableActor(int x, int y) const
+{
+	list<Actor*>::const_iterator it;
+	for (it = m_actors.begin(); it != m_actors.end(); it++) {
+		if ((**it).isAt(x, y) && (**it).isFillable())
+			return true;
+	}
+
+	return false;
+}
+
 Actor* StudentWorld::getActor(int x, int y) const
 {
 	list<Actor*>::const_iterator it;
@@ -137,7 +159,7 @@ void StudentWorld::addActor(Actor* actor)
 	return;
 }
 
-bool StudentWorld::attackActor(int x, int y, int damage)
+bool StudentWorld::attackActors(int x, int y, int damage)
 {
 	bool retval = false;
 
@@ -146,6 +168,21 @@ bool StudentWorld::attackActor(int x, int y, int damage)
 		if ((**it).isAt(x, y)) {
 			if ((**it).attack(damage))
 				retval = true;
+		}
+	}
+
+	return retval;
+}
+
+bool StudentWorld::killActors(int x, int y)
+{
+	bool retval = false;
+
+	list<Actor*>::iterator it;
+	for (it = m_actors.begin(); it != m_actors.end(); it++) {
+		if ((**it).isAt(x, y)) {
+			(**it).setHP(0);
+			retval = true;
 		}
 	}
 

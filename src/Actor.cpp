@@ -13,39 +13,45 @@ bool Actor::isAt(int x, int y) const
 bool Actor::move(int dir)
 {
 	bool retval = true;
-
 	int prev_dir = getDirection();
 	setDirection(dir);
 
-	Actor* actor = getActorInDirection(dir);
+	int newX = getXInDir(dir);
+	int newY = getYInDir(dir);
 
-	if (actor == nullptr)
+	if (!getWorld()->containsActor(newX, newY) || getWorld()->containsFillableActor(newX, newY))
 		moveForward();
 	else
 		retval = false;
+
+	std::cerr << retval;
+	Actor* test = getWorld()->getActor(newX, newY);
+	if (test != nullptr)
+		std::cerr << test->isFillable();
 
 	setDirection(prev_dir);
 	return retval;
 }
 
-Actor* Actor::getActorInDirection(int dir) const
+int Actor::getXInDir(int dir) const
 {
-	Actor* actor;
-
 	if (dir == left)
-		actor = getWorld()->getActor(getX()-1, getY());
+		return getX()-1;
 	else if (dir == right)
-		actor = getWorld()->getActor(getX()+1, getY());
-	else if (dir == up)
-		actor = getWorld()->getActor(getX(), getY()+1);
-	else if (dir == down)
-		actor = getWorld()->getActor(getX(), getY()-1);
+		return getX()+1;
 	else
-		actor = nullptr; // invalid direction
-
-	return actor;
+		return getX();
 }
 
+int Actor::getYInDir(int dir) const
+{
+	if (dir == down)
+		return getY()-1;
+	else if (dir == up)
+		return getY()+1;
+	else
+		return getY();
+}
 
 void Avatar::doSomething()
 {
@@ -83,12 +89,15 @@ void Avatar::doSomething()
 
 void Avatar::pushForward()
 {
-	Actor* actor = getActorInDirection(getDirection());
+	int dir = getDirection();
+	int newX = getXInDir(dir);
+	int newY = getYInDir(dir);
+	Actor* actor = getWorld()->getActor(newX, newY);
 
 	if (actor == nullptr) {
 		moveForward();
 	} else if (actor->isMovable()) {
-		if (actor->move(getDirection()))
+		if (actor->move(dir))
 			moveForward();
 	}
 
@@ -102,18 +111,7 @@ void Avatar::firePea()
 
 	int dir = getDirection();
 
-	Actor* pea;
-	if (dir == left)
-		pea = new Pea(getWorld(), getX()-1, getY(), dir);
-	else if (dir == right)
-		pea = new Pea(getWorld(), getX()+1, getY(), dir);
-	else if (dir == up)
-		pea = new Pea(getWorld(), getX(), getY()+1, dir);
-	else if (dir == down)
-		pea = new Pea(getWorld(), getX(), getY()-1, dir);
-	else
-		return;
-
+	Actor* pea = new Pea(getWorld(), getXInDir(dir), getYInDir(dir), dir);
 	getWorld()->addActor(pea);
 
 	setPeaCount(getPeaCount()-1);
@@ -125,15 +123,24 @@ void Pea::doSomething()
 	if (!isAlive())
 		return;
 
-	if (getWorld()->attackActor(getX(), getY(), 2)) {
+	if (getWorld()->attackActors(getX(), getY(), 2)) {
 		setHP(0);
 		return;
 	}
 
 	moveForward();
 
-	if (getWorld()->attackActor(getX(), getY(), 2))
+	if (getWorld()->attackActors(getX(), getY(), 2))
 		setHP(0);
 
 	return;
+}
+
+void Pit::doSomething()
+{
+	if (!isAlive())
+		return;
+
+	if (getWorld()->containsMovableActor(getX(), getY()))
+		getWorld()->killActors(getX(), getY());
 }

@@ -19,8 +19,11 @@ public:
 
 	bool containsActor(int x, int y) const;
 	Actor* getActor(int x, int y) const;
+	bool containsMovableActor(int x, int y) const;
+	bool containsFillableActor(int x, int y) const;
 	void addActor(Actor* actor);
-	bool attackActor(int x, int y, int damage);
+	bool attackActors(int x, int y, int damage);
+	bool killActors(int x, int y);
 
 private:
 	std::list<Actor*> m_actors;
