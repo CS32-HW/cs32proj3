@@ -13,22 +13,21 @@ public:
 	{
 		setVisible(true);
 		m_world = sw;
-		m_hp = 0;
+		m_hp = 1;
 		m_peaCount = 0;
 	}
 
-	bool isAt(int x, int y) const;
 	virtual void doSomething() = 0;
+	bool isAt(int x, int y) const;
 
 	int getHP() const { return m_hp; }
 	void setHP(int hp) { m_hp = hp; }
 	virtual bool isAlive() const { return m_hp > 0; }
 	virtual bool attack(int damage) { m_hp -= damage; return true; }
 
-	virtual bool isPlayer() const { return false; }
 	virtual bool isMovable() const { return false; }
-	virtual bool isPea() const { return false; }
 	virtual bool isFillable() const { return false; }
+	virtual bool isPickupable() const { return false; }
 
 	virtual int getPeaCount() const { return m_peaCount; }
 	virtual void setPeaCount(int peaCount) { m_peaCount = peaCount; }
@@ -51,15 +50,13 @@ class Avatar : public Actor
 {
 public:
 	Avatar(StudentWorld* sw, int x, int y)
-	: Actor(sw, IID_PLAYER, x, y, 0)
+	: Actor(sw, IID_PLAYER, x, y)
 	{
 		setHP(20);
 		setPeaCount(20);
 	}
 
 	virtual void doSomething();
-
-	virtual bool isPlayer() const { return true; }
 
 private:
 	void pushForward();
@@ -96,6 +93,7 @@ public:
 	// marbles don't do anything
 	virtual void doSomething() {}
 
+	// marbles can be moved by the player
 	virtual bool isMovable() const { return true; }
 
 private:
@@ -107,14 +105,15 @@ public:
 	Pea(StudentWorld* sw, int x, int y, int dir)
 	: Actor(sw, IID_PEA, x, y, dir)
 	{
-		setHP(1);
+		firstFrame = true;
 	}
 
 	virtual void doSomething();
-	virtual bool isPea() const { return true; }
+	// peas can't be attacked
 	virtual bool attack(int damage) { return false; }
 
 private:
+	bool firstFrame;
 };
 
 class Pit : public Actor
@@ -123,12 +122,39 @@ public:
 	Pit(StudentWorld* sw, int x, int y)
 	: Actor(sw, IID_PIT, x, y)
 	{
-		setHP(1);
 	}
 
 	virtual void doSomething();
 	virtual bool attack(int damage) { return false; }
-	virtual bool isFillable() { return true; }
+	virtual bool isFillable() const { return true; }
+
+private:
+};
+
+class Item : public Actor
+{
+public:
+	Item(StudentWorld* sw, int imageID, int x, int y)
+	: Actor(sw, imageID, x, y)
+	{
+	}
+
+	virtual bool isPickupable() const { return true; }
+	// items can't be attacked
+	virtual bool attack(int damage) { return false; }
+
+private:
+};
+
+class Crystal : public Item
+{
+public:
+	Crystal(StudentWorld* sw, int x, int y)
+	: Item(sw, IID_CRYSTAL, x, y)
+	{
+	}
+
+	virtual void doSomething();
 
 private:
 };

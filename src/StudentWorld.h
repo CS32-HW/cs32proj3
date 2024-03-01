@@ -19,6 +19,7 @@ public:
 
 	bool containsActor(int x, int y) const;
 	Actor* getActor(int x, int y) const;
+	Actor* getPlayer() const;
 	bool containsMovableActor(int x, int y) const;
 	bool containsFillableActor(int x, int y) const;
 	void addActor(Actor* actor);

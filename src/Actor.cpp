@@ -24,11 +24,6 @@ bool Actor::move(int dir)
 	else
 		retval = false;
 
-	std::cerr << retval;
-	Actor* test = getWorld()->getActor(newX, newY);
-	if (test != nullptr)
-		std::cerr << test->isFillable();
-
 	setDirection(prev_dir);
 	return retval;
 }
@@ -99,6 +94,8 @@ void Avatar::pushForward()
 	} else if (actor->isMovable()) {
 		if (actor->move(dir))
 			moveForward();
+	} else if (actor->isPickupable()) {
+		moveForward();
 	}
 
 	return;
@@ -120,6 +117,12 @@ void Avatar::firePea()
 
 void Pea::doSomething()
 {
+	// hack to get pea to render on the first frame
+	if (firstFrame) {
+		firstFrame = false;
+		return;
+	}
+
 	if (!isAlive())
 		return;
 
@@ -143,4 +146,17 @@ void Pit::doSomething()
 
 	if (getWorld()->containsMovableActor(getX(), getY()))
 		getWorld()->killActors(getX(), getY());
+}
+
+void Crystal::doSomething()
+{
+	if (!isAlive())
+		return;
+
+	StudentWorld* world = getWorld();
+	if (world->getPlayer()->isAt(getX(), getY())) {
+		world->increaseScore(50);
+		setHP(0);
+		world->playSound(SOUND_GOT_GOODIE);
+	}
 }

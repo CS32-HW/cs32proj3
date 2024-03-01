@@ -58,6 +58,9 @@ int StudentWorld::init()
 			case Level::pit:
 				addActor(new Pit(this, x, y));
 				break;
+			case Level::crystal:
+				addActor(new Crystal(this, x, y));
+				break;
 			}
 		}
 	}
@@ -151,6 +154,11 @@ Actor* StudentWorld::getActor(int x, int y) const
 	}
 
 	return nullptr;
+}
+
+Actor* StudentWorld::getPlayer() const
+{
+	return m_actors.front();
 }
 
 void StudentWorld::addActor(Actor* actor)
