@@ -82,6 +82,18 @@ void Avatar::doSomething()
 	}
 }
 
+bool Avatar::attack(int damage)
+{
+	setHP(getHP()-damage);
+
+	if (isAlive())
+		getWorld()->playSound(SOUND_PLAYER_IMPACT);
+	else
+		getWorld()->playSound(SOUND_PLAYER_DIE);
+
+	return true;
+}
+
 void Avatar::pushForward()
 {
 	int dir = getDirection();
@@ -243,4 +255,18 @@ void RageBot::doSomething()
 		else
 			setDirection(dir+180);
 	}
+}
+
+bool RageBot::attack(int damage)
+{
+	setHP(getHP()-damage);
+
+	if (isAlive()) {
+		getWorld()->playSound(SOUND_ROBOT_IMPACT);
+	} else {
+		getWorld()->playSound(SOUND_ROBOT_DIE);
+		getWorld()->increaseScore(100);
+	}
+
+	return true;
 }

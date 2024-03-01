@@ -60,6 +60,7 @@ public:
 	}
 
 	virtual void doSomething();
+	virtual bool attack(int damage);
 
 private:
 	void pushForward();
@@ -244,6 +245,7 @@ public:
 	}
 
 	void doSomething();
+	virtual bool attack(int damage);
 
 private:
 };
