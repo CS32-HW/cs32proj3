@@ -208,12 +208,15 @@ bool StudentWorld::playerIsInLineOfSight(int x, int y, int dir) const
 
 bool StudentWorld::obstructionExists(int x1, int y1, int x2, int y2) const
 {
+	if (x1 > x2 || y1 > y2)
+		return false;
+
 	list<Actor*>::const_iterator it;
 	for (it = m_actors.begin(); it != m_actors.end(); it++) {
 		int x = (**it).getX();
 		int y = (**it).getY();
-		if (x1 <= x && x <= x2 && y1 <= y && y <= y2)
-			return (**it).attack(0);
+		if (x1 <= x && x <= x2 && y1 <= y && y <= y2 && (**it).attack(0))
+			return true;
 	}
 
 	return false;
