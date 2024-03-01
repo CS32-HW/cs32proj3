@@ -20,7 +20,7 @@ bool Actor::move(int dir)
 	int newY = getYInDir(dir);
 
 	if (!getWorld()->containsActor(newX, newY) || getWorld()->containsFillableActor(newX, newY))
-		moveForward();
+		moveTo(newX, newY);
 	else
 		retval = false;
 
@@ -132,7 +132,7 @@ void Pea::doSomething()
 		return;
 	}
 
-	moveForward();
+	moveTo(getXInDir(getDirection()), getYInDir(getDirection()));
 
 	if (getWorld()->attackActors(getX(), getY(), 2))
 		setHP(0);
@@ -149,17 +149,21 @@ void Pit::doSomething()
 		getWorld()->killActors(getX(), getY());
 }
 
-void Crystal::doSomething()
+void Item::doSomething()
 {
 	if (!isAlive())
 		return;
 
-	StudentWorld* world = getWorld();
-	if (world->getPlayer()->isAt(getX(), getY())) {
-		world->increaseScore(50);
+	if (getWorld()->getPlayer()->isAt(getX(), getY())) {
 		setHP(0);
-		world->playSound(SOUND_GOT_GOODIE);
+		getWorld()->playSound(SOUND_GOT_GOODIE);
+		effect();
 	}
+}
+
+void Crystal::effect()
+{
+	getWorld()->increaseScore(50);
 }
 
 void Exit::doSomething()
@@ -176,4 +180,23 @@ void Exit::doSomething()
 		world->playSound(SOUND_REVEAL_EXIT);
 		m_revealed = true;
 	}
+}
+
+void ExtraLife::effect()
+{
+	getWorld()->increaseScore(1000);
+	getWorld()->incLives();
+}
+
+void RestoreHealth::effect()
+{
+	getWorld()->increaseScore(500);
+	getWorld()->getPlayer()->setHP(20);
+}
+
+void Ammo::effect()
+{
+	getWorld()->increaseScore(100);
+	Actor* player = getWorld()->getPlayer();
+	player->setPeaCount(player->getPeaCount()+20);
 }

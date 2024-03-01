@@ -65,6 +65,15 @@ int StudentWorld::init()
 			case Level::exit:
 				addActor(new Exit(this, x, y));
 				break;
+			case Level::extra_life:
+				addActor(new ExtraLife(this, x, y));
+				break;
+			case Level::restore_health:
+				addActor(new RestoreHealth(this, x, y));
+				break;
+			case Level::ammo:
+				addActor(new Ammo(this, x, y));
+				break;
 			}
 		}
 	}

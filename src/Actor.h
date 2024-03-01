@@ -141,11 +141,13 @@ public:
 	{
 	}
 
+	virtual void doSomething();
 	virtual bool canShareSpace() const { return true; }
 	// items can't be attacked
 	virtual bool attack(int damage) { return false; }
 
 private:
+	virtual void effect() = 0;
 };
 
 class Crystal : public Item
@@ -156,10 +158,10 @@ public:
 	{
 	}
 
-	virtual void doSomething();
 	virtual bool isCrystal() const { return true; }
 
 private:
+	virtual void effect();
 };
 
 class Exit : public Actor
@@ -178,6 +180,42 @@ public:
 
 private:
 	bool m_revealed;
+};
+
+class ExtraLife : public Item
+{
+public:
+	ExtraLife(StudentWorld* sw, int x, int y)
+	: Item(sw, IID_EXTRA_LIFE, x, y)
+	{
+	}
+
+private:
+	virtual void effect();
+};
+
+class RestoreHealth : public Item
+{
+public:
+	RestoreHealth(StudentWorld* sw, int x, int y)
+	: Item(sw, IID_RESTORE_HEALTH, x, y)
+	{
+	}
+
+private:
+	virtual void effect();
+};
+
+class Ammo : public Item
+{
+public:
+	Ammo(StudentWorld* sw, int x, int y)
+	: Item(sw, IID_AMMO, x, y)
+	{
+	}
+
+private:
+	virtual void effect();
 };
 
 #endif // ACTOR_H_
