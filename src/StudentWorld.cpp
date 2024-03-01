@@ -16,6 +16,7 @@ StudentWorld::StudentWorld(string assetPath)
 : m_level(assetPath), GameWorld(assetPath)
 {
 	m_bonus = 0;
+	m_level_complete = false;
 }
 
 int StudentWorld::init()
@@ -61,6 +62,9 @@ int StudentWorld::init()
 			case Level::crystal:
 				addActor(new Crystal(this, x, y));
 				break;
+			case Level::exit:
+				addActor(new Exit(this, x, y));
+				break;
 			}
 		}
 	}
@@ -73,6 +77,12 @@ int StudentWorld::move()
 	for (it = m_actors.begin(); it != m_actors.end(); it++) {
 		if ((**it).isAlive())
 			(**it).doSomething();
+	}
+
+	if (m_level_complete) {
+		m_level_complete = false;
+		increaseScore(m_bonus);
+		return GWSTATUS_FINISHED_LEVEL;
 	}
 
 	// delete dead actors
@@ -159,6 +169,19 @@ Actor* StudentWorld::getActor(int x, int y) const
 Actor* StudentWorld::getPlayer() const
 {
 	return m_actors.front();
+}
+
+
+int StudentWorld::getNumberOfCrystals() const
+{
+	int count = 0;
+	list<Actor*>::const_iterator it;
+	for (it = m_actors.begin(); it != m_actors.end(); it++) {
+		if ((**it).isAlive() && (**it).isCrystal())
+			count++;
+	}
+
+	return count;
 }
 
 void StudentWorld::addActor(Actor* actor)

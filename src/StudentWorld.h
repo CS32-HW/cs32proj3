@@ -20,16 +20,19 @@ public:
 	bool containsActor(int x, int y) const;
 	Actor* getActor(int x, int y) const;
 	Actor* getPlayer() const;
+	int getNumberOfCrystals() const;
 	bool containsMovableActor(int x, int y) const;
 	bool containsFillableActor(int x, int y) const;
 	void addActor(Actor* actor);
 	bool attackActors(int x, int y, int damage);
 	bool killActors(int x, int y);
+	void levelComplete() { m_level_complete = true; }
 
 private:
 	std::list<Actor*> m_actors;
 	Level m_level;
 	int m_bonus;
+	bool m_level_complete;
 };
 
 #endif // STUDENTWORLD_H_

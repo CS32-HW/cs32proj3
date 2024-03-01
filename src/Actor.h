@@ -27,7 +27,9 @@ public:
 
 	virtual bool isMovable() const { return false; }
 	virtual bool isFillable() const { return false; }
-	virtual bool isPickupable() const { return false; }
+	virtual bool canShareSpace() const { return false; }
+	// TODO try to avoid this
+	virtual bool isCrystal() const { return false; }
 
 	virtual int getPeaCount() const { return m_peaCount; }
 	virtual void setPeaCount(int peaCount) { m_peaCount = peaCount; }
@@ -105,7 +107,7 @@ public:
 	Pea(StudentWorld* sw, int x, int y, int dir)
 	: Actor(sw, IID_PEA, x, y, dir)
 	{
-		firstFrame = true;
+		m_firstFrame = true;
 	}
 
 	virtual void doSomething();
@@ -113,7 +115,7 @@ public:
 	virtual bool attack(int damage) { return false; }
 
 private:
-	bool firstFrame;
+	bool m_firstFrame;
 };
 
 class Pit : public Actor
@@ -139,7 +141,7 @@ public:
 	{
 	}
 
-	virtual bool isPickupable() const { return true; }
+	virtual bool canShareSpace() const { return true; }
 	// items can't be attacked
 	virtual bool attack(int damage) { return false; }
 
@@ -155,8 +157,27 @@ public:
 	}
 
 	virtual void doSomething();
+	virtual bool isCrystal() const { return true; }
 
 private:
+};
+
+class Exit : public Actor
+{
+public:
+	Exit(StudentWorld* sw, int x, int y)
+	: Actor(sw, IID_EXIT, x, y)
+	{
+		setVisible(false);
+		m_revealed = false;
+	}
+
+	virtual void doSomething();
+	virtual bool canShareSpace() const { return true; }
+	virtual bool attack(int damage) { return false; }
+
+private:
+	bool m_revealed;
 };
 
 #endif // ACTOR_H_

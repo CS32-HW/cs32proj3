@@ -90,12 +90,12 @@ void Avatar::pushForward()
 	Actor* actor = getWorld()->getActor(newX, newY);
 
 	if (actor == nullptr) {
-		moveForward();
+		moveTo(newX, newY);
 	} else if (actor->isMovable()) {
 		if (actor->move(dir))
-			moveForward();
-	} else if (actor->isPickupable()) {
-		moveForward();
+			moveTo(newX, newY);
+	} else if (actor->canShareSpace()) {
+		moveTo(newX, newY);
 	}
 
 	return;
@@ -106,8 +106,9 @@ void Avatar::firePea()
 	if (getPeaCount() <= 0)
 		return;
 
-	int dir = getDirection();
+	getWorld()->playSound(SOUND_PLAYER_FIRE);
 
+	int dir = getDirection();
 	Actor* pea = new Pea(getWorld(), getXInDir(dir), getYInDir(dir), dir);
 	getWorld()->addActor(pea);
 
@@ -118,8 +119,8 @@ void Avatar::firePea()
 void Pea::doSomething()
 {
 	// hack to get pea to render on the first frame
-	if (firstFrame) {
-		firstFrame = false;
+	if (m_firstFrame) {
+		m_firstFrame = false;
 		return;
 	}
 
@@ -158,5 +159,21 @@ void Crystal::doSomething()
 		world->increaseScore(50);
 		setHP(0);
 		world->playSound(SOUND_GOT_GOODIE);
+	}
+}
+
+void Exit::doSomething()
+{
+	StudentWorld* world = getWorld();
+	if (m_revealed) {
+		if (world->getPlayer()->isAt(getX(), getY())) {
+			world->playSound(SOUND_FINISHED_LEVEL);
+			world->increaseScore(2000);
+			world->levelComplete();
+		}
+	} else if (world->getNumberOfCrystals() == 0) {
+		setVisible(true);
+		world->playSound(SOUND_REVEAL_EXIT);
+		m_revealed = true;
 	}
 }
