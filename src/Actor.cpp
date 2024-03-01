@@ -60,7 +60,7 @@ void Avatar::doSomething()
 			setHP(0);
 			break;
 		case KEY_PRESS_SPACE:
-			firePea();
+			firePea(SOUND_PLAYER_FIRE);
 			break;
 		case KEY_PRESS_LEFT:
 			setDirection(left);
@@ -101,12 +101,12 @@ void Avatar::pushForward()
 	return;
 }
 
-void Avatar::firePea()
+void Actor::firePea(int sound)
 {
 	if (getPeaCount() <= 0)
 		return;
 
-	getWorld()->playSound(SOUND_PLAYER_FIRE);
+	getWorld()->playSound(sound);
 
 	int dir = getDirection();
 	Actor* pea = new Pea(getWorld(), getXInDir(dir), getYInDir(dir), dir);
@@ -199,4 +199,48 @@ void Ammo::effect()
 	getWorld()->increaseScore(100);
 	Actor* player = getWorld()->getPlayer();
 	player->setPeaCount(player->getPeaCount()+20);
+}
+
+Robot::Robot(StudentWorld* sw, int imageID, int x, int y, int dir)
+: Actor(sw, imageID, x, y, dir)
+{
+	m_ticks = (28 - getWorld()->getLevel()) / 4;
+	if (m_ticks < 3)
+		m_ticks = 3;
+
+	m_current_tick = 1;
+}
+
+bool Robot::tick()
+{
+	if (m_current_tick < m_ticks) {
+		m_current_tick++;
+		return false;
+	} else {
+		m_current_tick = 1;
+		return true;
+	}
+}
+
+void RageBot::doSomething()
+{
+	if (!isAlive())
+		return;
+
+	if (!tick())
+		return;
+
+	if (getWorld()->playerIsInLineOfSight(getX(), getY(), getDirection())) {
+		firePea(SOUND_ENEMY_FIRE);
+	} else {
+		int dir = getDirection();
+		int newX = getXInDir(dir);
+		int newY = getYInDir(dir);
+		Actor* actor = getWorld()->getActor(newX, newY);
+
+		if (actor == nullptr)
+			moveTo(newX, newY);
+		else
+			setDirection(dir+180);
+	}
 }

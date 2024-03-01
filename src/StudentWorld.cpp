@@ -74,6 +74,12 @@ int StudentWorld::init()
 			case Level::ammo:
 				addActor(new Ammo(this, x, y));
 				break;
+			case Level::horiz_ragebot:
+				addActor(new RageBot(this, x, y, right));
+				break;
+			case Level::vert_ragebot:
+				addActor(new RageBot(this, x, y, down));
+				break;
 			}
 		}
 	}
@@ -180,6 +186,38 @@ Actor* StudentWorld::getPlayer() const
 	return m_actors.front();
 }
 
+bool StudentWorld::playerIsInLineOfSight(int x, int y, int dir) const
+{
+
+	if (dir == left) {
+		if (getPlayer()->getX() < x && getPlayer()->getY() == y)
+			return !obstructionExists(getPlayer()->getX()+1, y, x-1, y);
+	} else if (dir == right) {
+		if (getPlayer()->getX() > x && getPlayer()->getY() == y)
+			return !obstructionExists(x+1, y, getPlayer()->getX()-1, y);
+	} else if (dir == up) {
+		if (getPlayer()->getX() == x && getPlayer()->getY() > y)
+			return !obstructionExists(x, y+1, x, getPlayer()->getY()-1);
+	} else if (dir == down) {
+		if (getPlayer()->getX() == x && getPlayer()->getY() < y)
+			return !obstructionExists(x, getPlayer()->getY()+1, x, y-1);
+	}
+
+	return false;
+}
+
+bool StudentWorld::obstructionExists(int x1, int y1, int x2, int y2) const
+{
+	list<Actor*>::const_iterator it;
+	for (it = m_actors.begin(); it != m_actors.end(); it++) {
+		int x = (**it).getX();
+		int y = (**it).getY();
+		if (x1 <= x && x <= x2 && y1 <= y && y <= y2)
+			return (**it).attack(0);
+	}
+
+	return false;
+}
 
 int StudentWorld::getNumberOfCrystals() const
 {

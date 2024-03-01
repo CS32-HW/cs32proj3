@@ -19,6 +19,10 @@ public:
 
 	bool containsActor(int x, int y) const;
 	Actor* getActor(int x, int y) const;
+	bool playerIsInLineOfSight(int x, int y, int dir) const;
+	// required: x1 <= x2 && y1 <= y2
+	// bounds are inclusive
+	bool obstructionExists(int x1, int y1, int x2, int y2) const;
 	Actor* getPlayer() const;
 	int getNumberOfCrystals() const;
 	bool containsMovableActor(int x, int y) const;
@@ -27,6 +31,13 @@ public:
 	bool attackActors(int x, int y, int damage);
 	bool killActors(int x, int y);
 	void levelComplete() { m_level_complete = true; }
+
+	// can't use the constants defined in GraphObject
+	static const int none = -1;
+	static const int right = 0;
+	static const int left = 180;
+	static const int up = 90;
+	static const int down = 270;
 
 private:
 	std::list<Actor*> m_actors;

@@ -8,7 +8,7 @@ class StudentWorld;
 class Actor : public GraphObject
 {
 public:
-	Actor(StudentWorld* sw, int imageID, int x, int y, int dir = 0)
+	Actor(StudentWorld* sw, int imageID, int x, int y, int dir = none)
 	: GraphObject(imageID, x, y, dir)
 	{
 		setVisible(true);
@@ -33,6 +33,7 @@ public:
 
 	virtual int getPeaCount() const { return m_peaCount; }
 	virtual void setPeaCount(int peaCount) { m_peaCount = peaCount; }
+	void firePea(int sound);
 
 	// move actor in direction, returns false if failed
 	virtual bool move(int dir);
@@ -52,7 +53,7 @@ class Avatar : public Actor
 {
 public:
 	Avatar(StudentWorld* sw, int x, int y)
-	: Actor(sw, IID_PLAYER, x, y)
+	: Actor(sw, IID_PLAYER, x, y, right)
 	{
 		setHP(20);
 		setPeaCount(20);
@@ -62,7 +63,6 @@ public:
 
 private:
 	void pushForward();
-	void firePea();
 };
 
 class Wall : public Actor
@@ -216,6 +216,36 @@ public:
 
 private:
 	virtual void effect();
+};
+
+class Robot: public Actor
+{
+public:
+	Robot(StudentWorld* sw, int imageID, int x, int y, int dir);
+
+	// Robots have unlimited peas
+	virtual int getPeaCount() const { return 1; }
+
+protected:
+	bool tick();
+
+private:
+	int m_ticks;
+	int m_current_tick;
+};
+
+class RageBot : public Robot
+{
+public:
+	RageBot(StudentWorld* sw, int x, int y, int dir)
+	: Robot(sw, IID_RAGEBOT, x, y, dir)
+	{
+		setHP(10);
+	}
+
+	void doSomething();
+
+private:
 };
 
 #endif // ACTOR_H_
