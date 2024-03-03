@@ -30,6 +30,7 @@ public:
 	virtual bool canShareSpace() const { return false; }
 	// TODO try to avoid this
 	virtual bool isCrystal() const { return false; }
+	virtual bool isGoodie() const { return false; }
 
 	virtual int getPeaCount() const { return m_peaCount; }
 	virtual void setPeaCount(int peaCount) { m_peaCount = peaCount; }
@@ -40,8 +41,8 @@ public:
 
 protected:
 	StudentWorld* getWorld() const { return m_world; }
-	int getXInDir(int dir) const;
-	int getYInDir(int dir) const;
+	int getXInDir(int dir = -1) const;
+	int getYInDir(int dir = -1) const;
 
 private:
 	StudentWorld* m_world;
@@ -114,6 +115,7 @@ public:
 	virtual void doSomething();
 	// peas can't be attacked
 	virtual bool attack(int damage) { return false; }
+	virtual bool canShareSpace() const { return true; }
 
 private:
 	bool m_firstFrame;
@@ -183,11 +185,24 @@ private:
 	bool m_revealed;
 };
 
-class ExtraLife : public Item
+class Goodie : public Item
+{
+public:
+	Goodie(StudentWorld* sw, int imageID, int x, int y)
+	: Item(sw, imageID, x, y)
+	{
+	}
+
+	virtual bool isGoodie() const { return true; }
+
+private:
+};
+
+class ExtraLife : public Goodie
 {
 public:
 	ExtraLife(StudentWorld* sw, int x, int y)
-	: Item(sw, IID_EXTRA_LIFE, x, y)
+	: Goodie(sw, IID_EXTRA_LIFE, x, y)
 	{
 	}
 
@@ -195,11 +210,11 @@ private:
 	virtual void effect();
 };
 
-class RestoreHealth : public Item
+class RestoreHealth : public Goodie
 {
 public:
 	RestoreHealth(StudentWorld* sw, int x, int y)
-	: Item(sw, IID_RESTORE_HEALTH, x, y)
+	: Goodie(sw, IID_RESTORE_HEALTH, x, y)
 	{
 	}
 
@@ -207,11 +222,11 @@ private:
 	virtual void effect();
 };
 
-class Ammo : public Item
+class Ammo : public Goodie
 {
 public:
 	Ammo(StudentWorld* sw, int x, int y)
-	: Item(sw, IID_AMMO, x, y)
+	: Goodie(sw, IID_AMMO, x, y)
 	{
 	}
 
@@ -244,8 +259,64 @@ public:
 		setHP(10);
 	}
 
-	void doSomething();
+	virtual void doSomething();
 	virtual bool attack(int damage);
+
+private:
+};
+
+class ThiefBot : public Robot
+{
+public:
+	ThiefBot(StudentWorld* sw, int imageID, int x, int y)
+	: Robot(sw, imageID, x, y, right)
+	{
+		init();
+		m_goodie = nullptr;
+	}
+
+	virtual void doSomething();
+	virtual bool attack(int damage);
+
+protected:
+	void init() { distanceBeforeTurning = randInt(1, 6); }
+	void pickUpGoodie();
+	void moveGoodie();
+	bool turn();
+	bool isObstructed();
+	virtual bool attackPlayer() = 0;
+
+private:
+	int distanceBeforeTurning;
+	Actor* m_goodie;
+};
+
+class RegularThiefBot : public ThiefBot
+{
+public:
+	RegularThiefBot(StudentWorld* sw, int x, int y)
+	: ThiefBot(sw, IID_THIEFBOT, x, y)
+	{
+		setHP(5);
+	}
+
+protected:
+	virtual bool attackPlayer() { return false; }
+
+private:
+};
+
+class MeanThiefBot : public ThiefBot
+{
+public:
+	MeanThiefBot(StudentWorld* sw, int x, int y)
+	: ThiefBot(sw, IID_MEAN_THIEFBOT, x, y)
+	{
+		setHP(8);
+	}
+
+protected:
+	virtual bool attackPlayer();
 
 private:
 };

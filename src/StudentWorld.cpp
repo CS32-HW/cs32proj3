@@ -170,6 +170,17 @@ bool StudentWorld::containsFillableActor(int x, int y) const
 	return false;
 }
 
+bool StudentWorld::containsGoodie(int x, int y) const
+{
+	list<Actor*>::const_iterator it;
+	for (it = m_actors.begin(); it != m_actors.end(); it++) {
+		if ((**it).isAt(x, y) && (**it).isGoodie())
+			return true;
+	}
+
+	return false;
+}
+
 Actor* StudentWorld::getActor(int x, int y) const
 {
 	list<Actor*>::const_iterator it;
@@ -184,6 +195,17 @@ Actor* StudentWorld::getActor(int x, int y) const
 Actor* StudentWorld::getPlayer() const
 {
 	return m_actors.front();
+}
+
+Actor* StudentWorld::getGoodie(int x, int y) const
+{
+	list<Actor*>::const_iterator it;
+	for (it = m_actors.begin(); it != m_actors.end(); it++) {
+		if ((**it).isAt(x, y) && (**it).isGoodie())
+			return *it;
+	}
+
+	return nullptr;
 }
 
 bool StudentWorld::playerIsInLineOfSight(int x, int y, int dir) const

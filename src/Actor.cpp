@@ -16,8 +16,8 @@ bool Actor::move(int dir)
 	int prev_dir = getDirection();
 	setDirection(dir);
 
-	int newX = getXInDir(dir);
-	int newY = getYInDir(dir);
+	int newX = getXInDir();
+	int newY = getYInDir();
 
 	if (!getWorld()->containsActor(newX, newY) || getWorld()->containsFillableActor(newX, newY))
 		moveTo(newX, newY);
@@ -30,6 +30,9 @@ bool Actor::move(int dir)
 
 int Actor::getXInDir(int dir) const
 {
+	if (dir == -1)
+		dir = getDirection();
+
 	if (dir == left)
 		return getX()-1;
 	else if (dir == right)
@@ -40,6 +43,9 @@ int Actor::getXInDir(int dir) const
 
 int Actor::getYInDir(int dir) const
 {
+	if (dir == -1)
+		dir = getDirection();
+
 	if (dir == down)
 		return getY()-1;
 	else if (dir == up)
@@ -97,8 +103,8 @@ bool Avatar::attack(int damage)
 void Avatar::pushForward()
 {
 	int dir = getDirection();
-	int newX = getXInDir(dir);
-	int newY = getYInDir(dir);
+	int newX = getXInDir();
+	int newY = getYInDir();
 	Actor* actor = getWorld()->getActor(newX, newY);
 
 	if (actor == nullptr) {
@@ -121,7 +127,7 @@ void Actor::firePea(int sound)
 	getWorld()->playSound(sound);
 
 	int dir = getDirection();
-	Actor* pea = new Pea(getWorld(), getXInDir(dir), getYInDir(dir), dir);
+	Actor* pea = new Pea(getWorld(), getXInDir(), getYInDir(), dir);
 	getWorld()->addActor(pea);
 
 	setPeaCount(getPeaCount()-1);
@@ -144,7 +150,7 @@ void Pea::doSomething()
 		return;
 	}
 
-	moveTo(getXInDir(getDirection()), getYInDir(getDirection()));
+	moveTo(getXInDir(), getYInDir());
 
 	if (getWorld()->attackActors(getX(), getY(), 2))
 		setHP(0);
@@ -246,11 +252,11 @@ void RageBot::doSomething()
 		firePea(SOUND_ENEMY_FIRE);
 	} else {
 		int dir = getDirection();
-		int newX = getXInDir(dir);
-		int newY = getYInDir(dir);
+		int newX = getXInDir();
+		int newY = getYInDir();
 		Actor* actor = getWorld()->getActor(newX, newY);
 
-		if (actor == nullptr)
+		if (actor == nullptr || actor->canShareSpace())
 			moveTo(newX, newY);
 		else
 			setDirection(dir+180);
@@ -269,4 +275,94 @@ bool RageBot::attack(int damage)
 	}
 
 	return true;
+}
+
+bool ThiefBot::turn()
+{
+	if (distanceBeforeTurning <= 0) {
+		return true;
+	} else {
+		distanceBeforeTurning--;
+		return false;
+	}
+}
+
+bool ThiefBot::isObstructed()
+{
+	int x = getXInDir();
+	int y = getYInDir();
+
+	Actor* actor = getWorld()->getActor(x, y);
+	if (actor == nullptr || actor->canShareSpace())
+		return false;
+	else
+		return true;
+}
+
+void ThiefBot::doSomething()
+{
+	if (!isAlive())
+		return;
+	if (!tick())
+		return;
+
+	if (attackPlayer()) {
+		return;
+	} else if (getWorld()->containsGoodie(getX(), getY()) && randInt(1, 10) == 1) {
+		pickUpGoodie();
+	} else if (turn() || isObstructed()) {
+		init();
+		int d = randInt(0,3)*90;
+		setDirection(d);
+		for (int i = 0; i < 4; i++) {
+			if (!isObstructed()) {
+				moveTo(getXInDir(), getYInDir());
+				moveGoodie();
+				return;
+			}
+			d = (d+90) % 360;
+			setDirection(d);
+		}
+	} else {
+		moveTo(getXInDir(), getYInDir());
+		moveGoodie();
+	}
+}
+
+bool ThiefBot::attack(int damage)
+{
+	setHP(getHP() - damage);
+	if (isAlive()) {
+		getWorld()->playSound(SOUND_ROBOT_IMPACT);
+	} else {
+		if (m_goodie != nullptr)
+			m_goodie->setVisible(true);
+
+		getWorld()->playSound(SOUND_ROBOT_DIE);
+		getWorld()->increaseScore(10);
+	}
+
+	return true;
+}
+
+void ThiefBot::pickUpGoodie()
+{
+	m_goodie = getWorld()->getGoodie(getX(), getY());
+	m_goodie->setVisible(false);
+}
+
+void ThiefBot::moveGoodie()
+{
+	if (m_goodie != nullptr)
+		m_goodie->moveTo(getX(), getY());
+}
+
+bool MeanThiefBot::attackPlayer()
+{
+	if (getWorld()->playerIsInLineOfSight(getX(), getY(), getDirection())) {
+		firePea(SOUND_ENEMY_FIRE);
+		return true;
+	} else {
+		return false;
+	}
 }
