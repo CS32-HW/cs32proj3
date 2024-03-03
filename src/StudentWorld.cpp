@@ -80,6 +80,12 @@ int StudentWorld::init()
 			case Level::vert_ragebot:
 				addActor(new RageBot(this, x, y, down));
 				break;
+			case Level::thiefbot_factory:
+				addActor(new ThiefBotFactory(this, x, y, 1));
+				break;
+			case Level::mean_thiefbot_factory:
+				addActor(new ThiefBotFactory(this, x, y, 2));
+				break;
 			}
 		}
 	}
@@ -181,6 +187,17 @@ bool StudentWorld::containsGoodie(int x, int y) const
 	return false;
 }
 
+bool StudentWorld::containsObstructiveActor(int x, int y) const
+{
+	list<Actor*>::const_iterator it;
+	for (it = m_actors.begin(); it != m_actors.end(); it++) {
+		if ((**it).isAt(x, y) && !(**it).canShareSpace())
+			return true;
+	}
+
+	return false;
+}
+
 Actor* StudentWorld::getActor(int x, int y) const
 {
 	list<Actor*>::const_iterator it;
@@ -250,6 +267,24 @@ int StudentWorld::getNumberOfCrystals() const
 	list<Actor*>::const_iterator it;
 	for (it = m_actors.begin(); it != m_actors.end(); it++) {
 		if ((**it).isAlive() && (**it).isCrystal())
+			count++;
+	}
+
+	return count;
+}
+
+int StudentWorld::countThiefBots(int x1, int y1, int x2, int y2) const
+{
+	if (x1 > x2 || y1 > y2)
+		return 0;
+
+	int count = 0;
+	list<Actor*>::const_iterator it;
+	for (it = m_actors.begin(); it != m_actors.end(); it++) {
+		int x = (**it).getX();
+		int y = (**it).getY();
+		if ((**it).isAlive() && (**it).isThiefBot() &&
+				x1 <= x && x <= x2 && y1 <= y && y <= y2)
 			count++;
 	}
 

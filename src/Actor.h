@@ -31,6 +31,7 @@ public:
 	// TODO try to avoid this
 	virtual bool isCrystal() const { return false; }
 	virtual bool isGoodie() const { return false; }
+	virtual bool isThiefBot() const { return false; }
 
 	virtual int getPeaCount() const { return m_peaCount; }
 	virtual void setPeaCount(int peaCount) { m_peaCount = peaCount; }
@@ -278,13 +279,16 @@ public:
 	virtual void doSomething();
 	virtual bool attack(int damage);
 
+	virtual bool isThiefBot() const { return true; }
+
 protected:
 	void init() { distanceBeforeTurning = randInt(1, 6); }
 	void pickUpGoodie();
 	void moveGoodie();
 	bool turn();
-	bool isObstructed();
+	bool isObstructed() const;
 	virtual bool attackPlayer() = 0;
+	virtual int points() const = 0;
 
 private:
 	int distanceBeforeTurning;
@@ -302,6 +306,7 @@ public:
 
 protected:
 	virtual bool attackPlayer() { return false; }
+	virtual int points() const { return 10; }
 
 private:
 };
@@ -317,8 +322,25 @@ public:
 
 protected:
 	virtual bool attackPlayer();
+	virtual int points() const { return 20; }
 
 private:
+};
+
+class ThiefBotFactory : public Actor
+{
+public:
+	ThiefBotFactory(StudentWorld* sw, int x, int y, int type)
+	: Actor(sw, IID_ROBOT_FACTORY, x, y)
+	{
+		m_type = type;
+	}
+
+	virtual void doSomething();
+	virtual bool attack(int damage) { return true; }
+
+private:
+	int m_type;
 };
 
 #endif // ACTOR_H_

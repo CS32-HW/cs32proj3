@@ -105,18 +105,15 @@ void Avatar::pushForward()
 	int dir = getDirection();
 	int newX = getXInDir();
 	int newY = getYInDir();
-	Actor* actor = getWorld()->getActor(newX, newY);
 
-	if (actor == nullptr) {
-		moveTo(newX, newY);
-	} else if (actor->isMovable()) {
-		if (actor->move(dir))
+	if (getWorld()->containsMovableActor(newX, newY)) {
+		if (getWorld()->getActor(newX, newY)->move(dir))
 			moveTo(newX, newY);
-	} else if (actor->canShareSpace()) {
+	} else if (getWorld()->containsObstructiveActor(newX, newY)) {
+		return;
+	} else {
 		moveTo(newX, newY);
 	}
-
-	return;
 }
 
 void Actor::firePea(int sound)
@@ -254,9 +251,8 @@ void RageBot::doSomething()
 		int dir = getDirection();
 		int newX = getXInDir();
 		int newY = getYInDir();
-		Actor* actor = getWorld()->getActor(newX, newY);
 
-		if (actor == nullptr || actor->canShareSpace())
+		if (!getWorld()->containsObstructiveActor(newX, newY))
 			moveTo(newX, newY);
 		else
 			setDirection(dir+180);
@@ -287,16 +283,12 @@ bool ThiefBot::turn()
 	}
 }
 
-bool ThiefBot::isObstructed()
+bool ThiefBot::isObstructed() const
 {
 	int x = getXInDir();
 	int y = getYInDir();
 
-	Actor* actor = getWorld()->getActor(x, y);
-	if (actor == nullptr || actor->canShareSpace())
-		return false;
-	else
-		return true;
+	return getWorld()->containsObstructiveActor(x, y);
 }
 
 void ThiefBot::doSomething()
@@ -339,7 +331,7 @@ bool ThiefBot::attack(int damage)
 			m_goodie->setVisible(true);
 
 		getWorld()->playSound(SOUND_ROBOT_DIE);
-		getWorld()->increaseScore(10);
+		getWorld()->increaseScore(points());
 	}
 
 	return true;
@@ -364,5 +356,24 @@ bool MeanThiefBot::attackPlayer()
 		return true;
 	} else {
 		return false;
+	}
+}
+
+void ThiefBotFactory::doSomething()
+{
+	StudentWorld* world = getWorld();
+	int count = world->countThiefBots(getX()-3, getY()-3, getX()+3, getY()+3);
+	bool occupied = world->countThiefBots(getX(), getY(), getX(), getY()) > 0;
+
+	if (count < 3 && !occupied && randInt(1, 50) == 1) {
+		Actor* actor;
+
+		if (m_type == 1)
+			actor = new RegularThiefBot(world, getX(), getY());
+		else if (m_type == 2)
+			actor = new MeanThiefBot(world, getX(), getY());
+
+		world->addActor(actor);
+		world->playSound(SOUND_ROBOT_BORN);
 	}
 }

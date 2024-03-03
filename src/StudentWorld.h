@@ -18,18 +18,24 @@ public:
 	virtual void cleanUp();
 
 	bool containsActor(int x, int y) const;
+
 	Actor* getActor(int x, int y) const;
 	Actor* getPlayer() const;
 	Actor* getGoodie(int x, int y) const;
+
 	bool playerIsInLineOfSight(int x, int y, int dir) const;
 	// checks for actors that can be attacked by peas
 	// bounds are inclusive
 	// returns false if x1 > x2 || y1 > y2
 	bool obstructionExists(int x1, int y1, int x2, int y2) const;
 	int getNumberOfCrystals() const;
+	int countThiefBots(int x1, int y1, int x2, int y2) const;
+
 	bool containsMovableActor(int x, int y) const;
 	bool containsFillableActor(int x, int y) const;
 	bool containsGoodie(int x, int y) const;
+	bool containsObstructiveActor(int x, int y) const;
+
 	void addActor(Actor* actor);
 	bool attackActors(int x, int y, int damage);
 	bool killActors(int x, int y);
