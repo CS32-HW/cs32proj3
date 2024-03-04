@@ -2,7 +2,7 @@ CC = g++
 INCLUDES = -I/usr/include/GL
 LIBS = -Wl,-rpath=/usr/local/cs/lib64 -lglut -lGL -lGLU
 STD = -std=c++17
-G32 = /usr/local/cs/bin/g32
+G32 = /usr/local/bin/g32
 
 OBJECTS = $(patsubst %.cpp, %.o, $(wildcard *.cpp))
 HEADERS = $(wildcard *.h)

@@ -13,7 +13,7 @@ GameWorld* createStudentWorld(string assetPath)
 }
 
 StudentWorld::StudentWorld(string assetPath)
-: m_level(assetPath), GameWorld(assetPath)
+: GameWorld(assetPath), m_level(assetPath)
 {
 	m_bonus = 0;
 	m_level_complete = false;
@@ -33,8 +33,8 @@ int StudentWorld::init()
 
 	Level::LoadResult result = m_level.loadLevel(lvlFile);
 	if (result == Level::load_fail_file_not_found) {
-		cerr << "error: could not find " << lvlFile << endl;
-		return GWSTATUS_LEVEL_ERROR;
+		// player wins when there are no more levels
+		return GWSTATUS_PLAYER_WON;
 	} else if (result == Level::load_fail_bad_format) {
 		cerr << "error: " << lvlFile << " was improperly formatted" << endl;
 		return GWSTATUS_LEVEL_ERROR;
