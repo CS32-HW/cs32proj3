@@ -31,4 +31,26 @@ ExtraLife.effect()    : increase score by 1000 and increment # of player lives
 I believe I have implemented all functionality and there are no bugs to the best
 of my knowledge.
 
-3. OTHER DESIGN DECISION AND ASSUMPTIONS
+3. OTHER DESIGN DECISIONS AND ASSUMPTIONS
+
+I had the StudentWorld keep track of which Actor is the player avatar by placing
+it at the front of the STL list of Actor pointers. I did this instead of adding
+an Actor method isPlayer() or having a separate member variable to hold the
+player avatar.
+
+The return value of the Actor methods 'attack' and 'canShareSpace' are probably
+redundant, since if an actor can be attacked by a pea, it probably won't be able
+to co-locate with another actor.
+
+Early on in the project, I assumed that two actors wouldn't be able to have the
+same coordinates, which caused problems down the road since
+StudentWorld::getActor could only return one actor and Avatar::doSomething would
+check the returned actor to see if it could co-locate, but completely miss the
+other actor at the same spot. To fix this, I instead created
+StudentWorld::containsObstructiveActor, which would loop through all the Actors
+at a certain location and return true if *any* of them could not co-locate.
+
+I had the thiefbots pick a random direction, but if that direction is
+obstructed, the thiefbot would try the next direction counterclockwise to it
+instead of a new randomly generated direction since it would be easier to know
+if the thiefbot had checked that direction already.
