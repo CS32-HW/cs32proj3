@@ -1,0 +1,34 @@
+CS32 Project 3 Report
+
+1. INTERACTION BETWEEN PLAYER AVATAR AND A GOODIE
+
+When the player avatar attempts to move to a space, it asks the StudentWorld if
+there are any movable objects and attempts to move that object. If there are no
+movable objects, the player avatar asks the StudentWorld if there are any
+obstructive objects (objects that return false when canShareSpace() is called)
+in which case the player avatar doesn't move. If there are no obstructive
+objects, the player avatar moves onto that space. The co-location is detected by
+the goodie, which checks if the player avatar shares the same coordinates by
+asking the StudentWorld for the location of the player. If the goodie detects
+co-location with the player, it sets its HP to 0, plays the sound
+SOUND_GOT_GOODIE, and runs the protected pure virtual function effect(), which
+is overridden by all the Item subclasses. The effect() function can increase the
+score, restore player health, etc. depending on the specific goodie.
+
+For example, an iteraction between the player avatar and an extra life goodie:
+
+Avatar.doSomething()  : player moves onto the same spot as a goodie
+ExtraLife.doSomething : uses doSomething() method defined in parent class
+                        'Goodie'
+Goodie.doSomething()  : uses doSomething() method defined in the parent class
+                        'Item'
+Item.doSomething()    : if co-located, kill itself, play SOUND_GOT_GOODIE, runs
+                        pure virtual function effect()
+ExtraLife.effect()    : increase score by 1000 and increment # of player lives
+
+2. UNFINISHED FUNCTIONALITY AND KNOWN BUGS
+
+I believe I have implemented all functionality and there are no bugs to the best
+of my knowledge.
+
+3. OTHER DESIGN DECISION AND ASSUMPTIONS
