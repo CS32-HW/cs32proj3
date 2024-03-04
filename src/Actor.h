@@ -23,6 +23,7 @@ public:
 	int getHP() const { return m_hp; }
 	void setHP(int hp) { m_hp = hp; }
 	virtual bool isAlive() const { return m_hp > 0; }
+	// returns true if actor can be attacked
 	virtual bool attack(int damage) { m_hp -= damage; return true; }
 
 	virtual bool isMovable() const { return false; }
@@ -151,6 +152,7 @@ public:
 	virtual bool attack(int damage) { return false; }
 
 private:
+	// what effect the item has
 	virtual void effect() = 0;
 };
 
@@ -244,6 +246,7 @@ public:
 	virtual int getPeaCount() const { return 1; }
 
 protected:
+	// returns true if allowed to move during current tick
 	bool tick();
 
 private:
@@ -285,9 +288,12 @@ protected:
 	void init() { distanceBeforeTurning = randInt(1, 6); }
 	void pickUpGoodie();
 	void moveGoodie();
+	// returns true if time to turn
 	bool turn();
 	bool isObstructed() const;
+	// returns true if successfully attacked player
 	virtual bool attackPlayer() = 0;
+	// returns how many points this actor is worth when killed
 	virtual int points() const = 0;
 
 private:
@@ -340,6 +346,8 @@ public:
 	virtual bool attack(int damage) { return true; }
 
 private:
+	// 1 is regular thiefbot
+	// 2 is mean thiefbot
 	int m_type;
 };
 
